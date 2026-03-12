@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد البريد الإلكتروني - معهد البصائر</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS (CDN for preview) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        display: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4',
+                            400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e',
+                            800: '#115e59', 900: '#134e4a', 950: '#042f2e'
+                        },
+                        secondary: {
+                            50: '#fdf4ff', 100: '#fae8ff', 200: '#f5d0fe', 300: '#f0abfc',
+                            400: '#e879f9', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf',
+                            800: '#86198f', 900: '#701a75', 950: '#4a044e'
+                        },
+                        surface: {
+                            50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1',
+                            400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155',
+                            800: '#1e293b', 900: '#0f172a', 950: '#020617'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+
+<body
+    class="font-sans text-surface-800 antialiased bg-white selection:bg-primary-500 selection:text-white h-screen flex overflow-hidden">
+
+    <!-- Left Side: Interactive Graphic / Branding (Visible on lg screens) -->
+    <div class="hidden lg:flex lg:w-1/2 relative bg-surface-900 overflow-hidden isolate justify-center items-center">
+        <div class="absolute inset-0 bg-gradient-to-br from-surface-900 via-primary-950 to-secondary-900 z-0"></div>
+        <div class="absolute inset-0 bg-pattern z-0 mix-blend-overlay"></div>
+        <div
+            class="absolute top-[20%] left-[-10%] w-[30vw] h-[30vw] bg-primary-500/20 rounded-full blur-3xl z-0 animate-pulse">
+        </div>
+        <div class="absolute bottom-[10%] right-[10%] w-[25vw] h-[25vw] bg-secondary-500/10 rounded-full blur-3xl z-0">
+        </div>
+
+        <div class="relative z-10 p-12 max-w-2xl text-white">
+            <div class="mb-12">
+                <div
+                    class="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 font-display text-4xl font-bold text-white shadow-2xl shadow-primary-500/40 ring-1 ring-white/20">
+                    B
+                </div>
+            </div>
+            <h1 class="text-4xl lg:text-5xl font-extrabold leading-tight mb-6">
+                خطوة واحدة <br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400">لتبدأ
+                    رحلتك</span>
+            </h1>
+            <p class="text-lg text-surface-300 leading-relaxed font-medium max-w-xl">
+                شكراً لتسجيلك! قبل البدء، يرجى تأكيد عنوان بريدك الإلكتروني من خلال النقر على الرابط الذي أرسلناه إليك
+                للتو لضمان أمان حسابك.
+            </p>
+        </div>
+    </div>
+
+    <!-- Right Side: Form -->
+    <div class="flex relative w-full lg:w-1/2 flex-col items-center justify-center p-6 sm:p-12 lg:p-24 overflow-y-auto">
+        <div class="lg:hidden flex mb-12 items-center justify-center">
+            <div
+                class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 font-display text-3xl font-bold text-white shadow-xl shadow-primary-500/30">
+                B
+            </div>
+        </div>
+
+        <div class="w-full max-w-sm shrink-0">
+            <div class="mb-10 text-center lg:text-right">
+                <div
+                    class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-6">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-extrabold text-surface-900 tracking-tight">تحقق من بريدك</h2>
+                <p class="mt-4 text-surface-500 font-medium leading-relaxed text-sm">إذا لم تتلق البريد الإلكتروني الخاص
+                    بنا خلال دقائق، يمكنك طلب إعادة الإرسال من الزر أدناه.</p>
+            </div>
+
+            <form action="#" method="POST" class="space-y-6">
+                <div class="pt-2 flex flex-col gap-4">
+                    <button type="submit"
+                        class="group relative flex w-full justify-center items-center gap-2 overflow-hidden rounded-xl bg-surface-900 hover:bg-black px-4 py-4 text-sm font-bold text-white shadow-xl shadow-surface-900/20 transition-all active:scale-[0.98]">
+                        <span>إعادة إرسال رابط التأكيد</span>
+                        <svg class="w-5 h-5 rtl:scale-x-[-1] transition-transform group-hover:rotate-180 duration-500"
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+
+                </div>
+            </form>
+
+            <div
+                class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium border-t border-surface-200 pt-8">
+                <a href="profile.html" class="text-surface-600 hover:text-primary-600 transition-colors">تعديل الملف
+                    الشخصي</a>
+                <form method="POST" action="#">
+                    <button type="submit" class="text-surface-600 hover:text-red-600 transition-colors">تسجيل
+                        الخروج</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
