@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
             RolesAndPermissionsSeeder::class,
             SettingsSeeder::class,
+            NotificationTemplateSeeder::class,
         ]);
 
         // 1. Super Admin
