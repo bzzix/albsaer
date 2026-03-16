@@ -27,4 +27,8 @@ Route::middleware([
         return view('dashboard.notification-templates.index');
     })->name('notification-templates.index');
     Route::get('/dashboard/settings/templates', \App\Livewire\Settings\MessageTemplates::class)->name('settings.templates');
+
+    // User Management
+    Route::get('/dashboard/users', \App\Livewire\Users\UsersManager::class)->name('users.index');
+    Route::get('/dashboard/roles', \App\Livewire\Roles\RolesManager::class)->name('roles.index');
 });

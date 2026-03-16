@@ -43,60 +43,6 @@
     $primaryRgb = hexToRgb($primaryColor);
 @endphp
 
-<!-- Tailwind CSS: Loaded in Head to prevent FOUC -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-    tailwind.config = {
-        darkMode: 'class',
-        theme: {
-            extend: {
-                fontFamily: {
-                    sans: ['{{ $fontFamily }}', 'Cairo', 'sans-serif'],
-                    display: ['Outfit', 'sans-serif'],
-                },
-                colors: {
-                    primary: {
-                        50: 'var(--color-primary-50)',
-                        100: 'var(--color-primary-100)',
-                        500: 'var(--color-primary-500)',
-                        600: 'var(--color-primary-600)',
-                        700: 'var(--color-primary-700)',
-                    },
-                    secondary: {
-                        50: 'var(--color-secondary-50)',
-                        500: 'var(--color-secondary-500)',
-                        600: 'var(--color-secondary-600)',
-                    },
-                    surface: {
-                        50: 'var(--color-surface-50)',
-                        100: 'var(--color-surface-100)',
-                        200: 'var(--color-surface-200)',
-                        300: 'var(--color-surface-300)',
-                        400: 'var(--color-surface-400)',
-                        500: 'var(--color-surface-500)',
-                        600: 'var(--color-surface-600)',
-                        700: 'var(--color-surface-700)',
-                        800: 'var(--color-surface-800)',
-                        900: 'var(--color-surface-900)',
-                    }
-                },
-                boxShadow: {
-                    'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
-                    'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
-                }
-            }
-        }
-    }
-</script>
-
-<!-- Fonts: Dynamic Google Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family={{ $fontFamily }}:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&family=Almarai:wght@400;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<!-- iziToast -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
-
 <style>
     :root {
         /* Primary Palette */

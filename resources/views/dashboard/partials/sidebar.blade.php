@@ -48,16 +48,32 @@
             <p class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-3 mt-6 nav-text px-2">
                 الإدارة الأكاديمية</p>
 
-            <a href="javascript:void(0)"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-surface-600 font-medium cursor-not-allowed opacity-50 pointer-events-none">
-                <svg class="w-5 h-5 flex-shrink-0 grayscale" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
-                    </path>
-                </svg>
-                <span class="nav-text">إدارة المستخدمين</span>
-            </a>
+            <div x-data="{ usersOpen: {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'true' : 'false' }} }" class="space-y-1">
+                <button @click="usersOpen = !usersOpen"
+                    class="flex items-center justify-between w-full px-3 py-2.5 rounded-xl transition-colors font-medium cursor-pointer group outline-none {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'bg-primary-50 text-primary-700 font-bold' : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900' }}">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0 {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'text-primary-600' : 'group-hover:text-primary-600' }} transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <span class="nav-text">إدارة المستخدمين</span>
+                    </div>
+                    <svg :class="{'rotate-180': usersOpen}" class="w-4 h-4 transition-transform duration-200 nav-text {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'text-primary-600' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                
+                <div x-show="usersOpen" 
+                    x-transition:enter="transition ease-out duration-100" 
+                    x-transition:enter-start="transform opacity-0 scale-95" 
+                    x-transition:enter-end="transform opacity-100 scale-100" 
+                    class="sub-menu pr-9 space-y-1 nav-text">
+                    <a href="{{ route('users.index') }}" class="block px-3 py-2 rounded-lg text-sm transition-colors font-medium {{ request()->routeIs('users.index') ? 'bg-primary-50 text-primary-600 font-bold' : 'text-surface-600 hover:bg-surface-100 hover:text-primary-600' }}">المستخدمين</a>
+                    <a href="{{ route('roles.index') }}" class="block px-3 py-2 rounded-lg text-sm transition-colors font-medium {{ request()->routeIs('roles.index') ? 'bg-primary-50 text-primary-600 font-bold' : 'text-surface-600 hover:bg-surface-100 hover:text-primary-600' }}">الصلاحيات والأدوار</a>
+                </div>
+            </div>
 
             <a href="javascript:void(0)"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-surface-600 font-medium cursor-not-allowed opacity-50 pointer-events-none">

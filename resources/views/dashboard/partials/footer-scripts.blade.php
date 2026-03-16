@@ -1,11 +1,11 @@
-<!-- iziToast JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
 
 <script>
-    document.addEventListener('livewire:init', () => {
+    document.addEventListener('livewire:initialized', () => {
+        // Generic Notification Listener
         Livewire.on('notify', (data) => {
             const options = {
-                title: data[0].title || '',
+                title: data[0].title || (data[0].type === 'success' ? 'نجاح' : (data[0].type === 'error' ? 'خطأ' : 'تنبيه')),
                 message: data[0].message || '',
                 position: data[0].position || 'bottomLeft',
                 timeout: data[0].timeout || 5000,
@@ -24,6 +24,37 @@
             } else {
                 iziToast.info(options);
             }
+        });
+
+        // Global Deletion Confirmation Listener
+        Livewire.on('confirm-delete', (data) => {
+            iziToast.question({
+                timeout: 20000,
+                close: false,
+                overlay: true,
+                displayMode: 'once',
+                id: 'question',
+                zindex: 9999,
+                title: data[0].title || 'تأكيد الحذف',
+                message: data[0].message || 'هل أنت متأكد من هذه العملية؟',
+                position: 'topLeft', // Changed to top-left as requested
+                transitionIn: 'bounceInLeft',
+                transitionOut: 'fadeOutLeft',
+                rtl: true,
+                buttons: [
+                    ['<button><b>نعم، استمر</b></button>', function (instance, toast) {
+                        instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                        if (data[0].component) {
+                            Livewire.find(data[0].component).call(data[0].action, data[0].id);
+                        } else {
+                            Livewire.dispatch(data[0].event, { id: data[0].id });
+                        }
+                    }, true],
+                    ['<button>إلغاء</button>', function (instance, toast) {
+                        instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                    }],
+                ]
+            });
         });
     });
 </script>

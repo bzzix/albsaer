@@ -1,7 +1,10 @@
+/* iziToast CSS - Must be imported BEFORE @tailwind directives */
+@import 'izitoast/dist/css/iziToast.min.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-[x-cloak] {
-    display: none;
+@layer base {
+    /* Custom Global Styles */
 }

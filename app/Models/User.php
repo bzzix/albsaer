@@ -31,6 +31,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profile_photo_path',
+        'phone',
+        'whatsapp_number',
+        'guardian_phone',
+        'national_id',
+        'is_active',
     ];
 
     /**
@@ -64,6 +70,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 }

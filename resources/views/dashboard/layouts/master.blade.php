@@ -14,6 +14,7 @@
     @endif
     
     @include('dashboard.partials.head-css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 <body class="text-surface-800 antialiased h-screen flex overflow-hidden" x-data="{ sidebarOpen: true, mobileMenuOpen: false }">
