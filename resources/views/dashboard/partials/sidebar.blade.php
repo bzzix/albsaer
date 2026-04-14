@@ -122,30 +122,33 @@
                         d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                     </path>
                 </svg>
-                <span class="nav-text">المشاريع والدورات</span>
+                <span class="nav-text">إدارة المشاريع</span>
             </a>
 
-            <a href="{{ route('dashboard.academic.groups.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('dashboard.academic.groups.*') ? 'bg-primary-50 text-primary-700 font-bold shadow-sm' : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900' }}">
-                <svg class="w-5 h-5 flex-shrink-0 group-hover:text-primary-600 transition-all" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                    </path>
-                </svg>
-                <span class="nav-text">إدارة المجموعات</span>
-            </a>
-
-            <a href="{{ route('dashboard.academic.schedules.builder') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('dashboard.academic.schedules.*') ? 'bg-primary-50 text-primary-700 font-bold shadow-sm' : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900' }}">
-                <svg class="w-5 h-5 flex-shrink-0 group-hover:text-primary-600 transition-all" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                    </path>
-                </svg>
-                <span class="nav-text">الجداول الدراسية</span>
-            </a>
+            <div x-data="{ studySystemOpen: {{ (request()->routeIs('dashboard.academic.groups.*') || request()->routeIs('dashboard.academic.schedules.*')) ? 'true' : 'false' }} }" class="space-y-1 mt-1">
+                <button @click="studySystemOpen = !studySystemOpen"
+                    class="flex items-center justify-between w-full px-3 py-2.5 rounded-xl transition-all font-medium cursor-pointer group outline-none {{ (request()->routeIs('dashboard.academic.groups.*') || request()->routeIs('dashboard.academic.schedules.*')) ? 'bg-primary-50 text-primary-700 font-bold shadow-sm' : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900' }}">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0 {{ (request()->routeIs('dashboard.academic.groups.*') || request()->routeIs('dashboard.academic.schedules.*')) ? 'text-primary-600' : 'group-hover:text-primary-600' }} transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        <span class="nav-text">إدارة نظام الدراسة</span>
+                    </div>
+                    <svg :class="{'rotate-180': studySystemOpen}" class="w-4 h-4 transition-transform duration-200 nav-text {{ (request()->routeIs('dashboard.academic.groups.*') || request()->routeIs('dashboard.academic.schedules.*')) ? 'text-primary-600' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                
+                <div x-show="studySystemOpen" x-collapse
+                    class="sub-menu pr-9 space-y-1 nav-text">
+                    <a href="{{ route('dashboard.academic.groups.index') }}" class="block px-3 py-2 rounded-lg text-sm transition-colors font-medium {{ request()->routeIs('dashboard.academic.groups.*') ? 'text-primary-700 font-bold' : 'text-surface-500 hover:text-primary-600' }}">إدارة المجموعات</a>
+                    <a href="{{ route('dashboard.academic.schedules.periods') }}" class="block px-3 py-2 rounded-lg text-sm transition-colors font-medium {{ request()->routeIs('dashboard.academic.schedules.periods') ? 'text-primary-700 font-bold' : 'text-surface-500 hover:text-primary-600' }}">فترات الدراسة</a>
+                    <a href="{{ route('dashboard.academic.schedules.builder') }}" class="block px-3 py-2 rounded-lg text-sm transition-colors font-medium {{ request()->routeIs('dashboard.academic.schedules.builder') ? 'text-primary-700 font-bold' : 'text-surface-500 hover:text-primary-600' }}">الجدول الدراسي</a>
+                </div>
+            </div>
 
             <a href="{{ route('dashboard.academic.instructors.index') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('instructors.*') ? 'bg-primary-50 text-primary-700 font-bold shadow-sm' : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900' }}">

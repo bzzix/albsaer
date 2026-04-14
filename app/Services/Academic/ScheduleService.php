@@ -11,47 +11,99 @@ use Illuminate\Support\Facades\DB;
 class ScheduleService extends BaseService
 {
     /**
-     * إنشاء جدول مرن مع فترات دراسية (صباحية/مسائية)
-     * وتوليد الحصص بناءً على قالب زمني
+     * إنشاء مرحلة دراسية جديدة وتوليد حصصها بناءً على قالب فترة
      */
-    public function createFlexibleSchedule(array $data)
+    public function createScheduleFromTemplate(array $data)
     {
         return DB::transaction(function () use ($data) {
+            $period = \App\Models\StudyPeriod::findOrFail($data['study_period_id']);
+            $groupId = $data['group_id'];
+
+            // إنشاء السجل الرئيسي للجدول (StudySchedule) للمجموعة
             $schedule = StudySchedule::create([
-                'name' => $data['name'],
-                'description' => $data['description'] ?? null,
-                'group_id' => $data['group_id'] ?? null,
+                'name' => $period->name . ' - ' . \App\Models\Group::find($groupId)?->name,
+                'group_id' => $groupId,
                 'project_id' => $data['project_id'] ?? null,
-                'semester_id' => $data['semester_id'] ?? null,
-                'period' => $data['period'] ?? 'morning',
-                'is_active' => $data['is_active'] ?? true,
+                'is_active' => true,
             ]);
 
-            $activeDays = $data['active_days'] ?? []; // ['sunday', 'monday', ...]
-            $sessionTemplates = $data['session_templates'] ?? []; // [['name' => '', 'start' => '', 'end' => ''], ...]
+            $activeDays = $period->active_days; // [0, 1, 2, 3, 4]
+            $sessionsCount = $period->sessions_count;
+            $startTime = $period->start_time;
+            $sessionDuration = $period->session_duration;
+            $breakDuration = $period->break_duration;
 
             foreach ($activeDays as $dayOfWeek) {
                 $day = $schedule->days()->create([
-                    'day_of_week' => $dayOfWeek,
+                    'day_of_week' => $this->mapDayIndex($dayOfWeek),
                     'is_study_day' => true,
-                    'day_start_time' => $data['day_start_time'] ?? null,
-                    'day_end_time' => $data['day_end_time'] ?? null,
-                    'sessions_count' => count($sessionTemplates),
+                    'sessions_count' => $sessionsCount,
                 ]);
 
-                foreach ($sessionTemplates as $index => $template) {
+                // توليد حصص فارغة بتوقيتات محسوبة تراعي الاستراحات
+                $currentTime = strtotime($startTime);
+
+                for ($i = 0; $i < $sessionsCount; $i++) {
+                    $sessionStart = date('H:i:s', $currentTime);
+                    $sessionEnd = date('H:i:s', strtotime("+$sessionDuration minutes", $currentTime));
+
                     $day->sessions()->create([
-                        'session_number' => $index + 1,
-                        'session_name' => $template['name'] ?? ('الحصة ' . ($index + 1)),
-                        'start_time' => $template['start_time'],
-                        'end_time' => $template['end_time'],
-                        'subject_id' => $template['subject_id'] ?? null,
+                        'session_number' => $i + 1,
+                        'start_time' => $sessionStart,
+                        'end_time' => $sessionEnd,
+                        'session_name' => "الحصة " . ($i + 1),
                     ]);
+
+                    // إضافة وقت الحصة + وقت الاستراحة للحصة القادمة
+                    $currentTime = strtotime("+$sessionDuration minutes", $currentTime);
+                    if ($i < $sessionsCount - 1) {
+                        $currentTime = strtotime("+$breakDuration minutes", $currentTime);
+                    }
                 }
             }
 
             return $schedule;
         });
+    }
+
+    /**
+     * تحديث بيانات حصة معينة (تعيين مادة ومدرس)
+     */
+    public function updateSessionAssignment($sessionId, $subjectId, $instructorId)
+    {
+        return DB::transaction(function () use ($sessionId, $subjectId, $instructorId) {
+            $session = DailySession::findOrFail($sessionId);
+            $session->update(['subject_id' => $subjectId]);
+
+            // تحديث المدرب (Many-to-Many عبر جدول الوسط)
+            DB::table('session_instructors')->updateOrInsert(
+                ['daily_session_id' => $sessionId],
+                [
+                    'instructor_id' => $instructorId,
+                    'is_primary' => true,
+                    'updated_at' => now()
+                ]
+            );
+
+            return $session;
+        });
+    }
+
+    /**
+     * تحويل معامل اليوم (0-6) إلى الاسم المخزن في القاعدة
+     */
+    protected function mapDayIndex($index)
+    {
+        $days = [
+            0 => 'saturday',
+            1 => 'sunday',
+            2 => 'monday',
+            3 => 'tuesday',
+            4 => 'wednesday',
+            5 => 'thursday',
+            6 => 'friday',
+        ];
+        return $days[$index] ?? 'sunday';
     }
 
     /**

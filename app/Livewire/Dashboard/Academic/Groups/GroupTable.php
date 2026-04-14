@@ -65,7 +65,7 @@ class GroupTable extends DataTableComponent
                 ->sortable()
                 ->format(fn($value) => $value ?? 'لم يعين بعد'),
 
-            Column::make("السعة", "capacity")
+            Column::make("السعة", "max_students")
                 ->sortable()
                 ->format(fn($value, $row) => "{$row->students_count} / {$value}"),
 

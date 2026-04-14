@@ -4,47 +4,26 @@ namespace App\Livewire\Dashboard\Academic\Groups;
 
 use App\Models\Group;
 use App\Models\Project;
-use App\Models\Instructor;
-use App\Models\User;
+use App\Models\AcademicYear;
 use App\Services\Academic\GroupService;
 use Livewire\Component;
-use Livewire\Attributes\Rule;
 
 class GroupForm extends Component
 {
     protected GroupService $groupService;
 
-    public $groupId = null;
-    
-    #[Rule('required|exists:projects,id')]
-    public $project_id = null;
+    public $groupId    = null;
+    public $isEditMode = false;
 
-    #[Rule('required|string|max:255')]
-    public $name = '';
+    // حقل العام الدراسي (للفلترة)
+    public $academic_year_id = null;
 
-    #[Rule('required|string|unique:groups,code')]
-    public $code = '';
-
-    #[Rule('nullable|exists:instructors,id')]
-    public $trainer_id = null;
-
-    #[Rule('nullable|exists:users,id')]
-    public $supervisor_id = null;
-
-    #[Rule('required|date')]
-    public $start_date = '';
-
-    #[Rule('required|date')]
-    public $end_date = '';
-
-    #[Rule('required|integer|min:1')]
+    // الحقول الرئيسية
+    public $project_id   = null;
+    public $name         = '';
+    public $code         = '';
     public $max_students = 30;
-
-    #[Rule('required|in:active,completed,cancelled')]
-    public $status = 'active';
-
-    #[Rule('boolean')]
-    public $is_active = true;
+    public $is_active    = true;
 
     public function booted()
     {
@@ -53,35 +32,63 @@ class GroupForm extends Component
 
     public function mount($groupId = null, $projectId = null)
     {
+        // تعيين العام الدراسي الافتراضي
+        $currentYear = AcademicYear::getCurrent();
+        $this->academic_year_id = $currentYear?->id;
+
         $this->project_id = $projectId;
 
         if ($groupId) {
             $group = Group::findOrFail($groupId);
-            $this->groupId = $group->id;
-            $this->project_id = $group->project_id;
-            $this->name = $group->name;
-            $this->code = $group->code;
-            $this->trainer_id = $group->trainer_id;
-            $this->supervisor_id = $group->supervisor_id;
-            $this->start_date = $group->start_date->format('Y-m-d');
-            $this->end_date = $group->end_date->format('Y-m-d');
-            $this->max_students = $group->max_students;
-            $this->status = $group->status;
-            $this->is_active = $group->is_active;
-        } else {
-            $this->start_date = now()->format('Y-m-d');
-            $this->end_date = now()->addMonths(3)->format('Y-m-d');
+            $this->groupId          = $group->id;
+            $this->isEditMode       = true;
+            $this->project_id       = $group->project_id;
+            $this->academic_year_id = $group->project?->academic_year_id ?? $this->academic_year_id;
+            $this->name             = $group->name;
+            $this->code             = $group->code;
+            $this->max_students     = $group->max_students;
+            $this->is_active        = $group->is_active;
         }
+    }
+
+    public function updatedAcademicYearId()
+    {
+        // عند تغيير العام أعد ضبط المشروع
+        $this->project_id = null;
+    }
+
+    public function getAvailableYearsProperty()
+    {
+        // العام الحالي والأعوام المستقبلية فقط
+        return AcademicYear::where('end_date', '>=', now()->toDateString())
+            ->orderBy('start_date', 'asc')
+            ->get();
+    }
+
+    public function getAvailableProjectsProperty()
+    {
+        if (!$this->academic_year_id) return collect();
+        return Project::where('academic_year_id', $this->academic_year_id)
+            ->active()
+            ->get();
     }
 
     public function save()
     {
-        // Custom validation for unique code on update
-        $rules = $this->getRules();
-        if ($this->groupId) {
-            $rules['code'] = 'required|string|unique:groups,code,' . $this->groupId;
-        }
+        $rules = [
+            'academic_year_id' => 'required|exists:academic_years,id',
+            'project_id'       => 'required|exists:projects,id',
+            'name'             => 'required|string|max:255',
+            'code'             => 'required|string|unique:groups,code' . ($this->groupId ? ',' . $this->groupId : ''),
+            'max_students'     => 'required|integer|min:1',
+            'is_active'        => 'boolean',
+        ];
+
         $data = $this->validate($rules);
+        unset($data['academic_year_id']); // لا يُخزَّن في جدول groups
+
+        // إضافة قيم افتراضية
+        $data['status'] = 'active';
 
         try {
             if ($this->groupId) {
@@ -92,28 +99,23 @@ class GroupForm extends Component
                 $message = 'تم إضافة المجموعة بنجاح';
             }
 
-            $this->dispatch('notify', [
-                'type' => 'success',
-                'title' => 'تمت العملية',
-                'message' => $message,
-            ]);
-
+            $this->dispatch('notify', ['type' => 'success', 'title' => 'تمت العملية', 'message' => $message]);
             $this->dispatch('groupSaved');
         } catch (\Exception $e) {
-            $this->dispatch('notify', [
-                'type' => 'error',
-                'title' => 'فشل',
-                'message' => 'حدث خطأ أثناء حفظ المجموعة: ' . $e->getMessage(),
-            ]);
+            $this->dispatch('notify', ['type' => 'error', 'title' => 'فشل', 'message' => 'حدث خطأ: ' . $e->getMessage()]);
         }
+    }
+
+    public function resetForm()
+    {
+        $this->reset(['groupId', 'isEditMode', 'project_id', 'name', 'code', 'max_students']);
+        $this->is_active = true;
+        $currentYear = AcademicYear::getCurrent();
+        $this->academic_year_id = $currentYear?->id;
     }
 
     public function render()
     {
-        return view('livewire.dashboard.academic.groups.group-form', [
-            'projects' => Project::active()->pluck('name', 'id'),
-            'trainers' => Instructor::with('user')->get()->pluck('user.name', 'id'),
-            // 'supervisors' => User::role('supervisor')->get()->pluck('name', 'id'), // Example
-        ]);
+        return view('livewire.groups.group-form');
     }
 }

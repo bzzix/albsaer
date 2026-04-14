@@ -23,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // تسجيل المراقبين (Observers)
-        Excuse::observe(ExcuseObserver::class);
+        \App\Models\Excuse::observe(\App\Observers\ExcuseObserver::class);
+        \App\Models\StudySchedule::observe(\App\Observers\StudyScheduleObserver::class);
+        \App\Models\DailySession::observe(\App\Observers\DailySessionObserver::class);
+        \App\Models\SessionAttendance::observe(\App\Observers\SessionAttendanceObserver::class);
     }
 }

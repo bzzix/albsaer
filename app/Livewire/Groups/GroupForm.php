@@ -4,138 +4,155 @@ namespace App\Livewire\Groups;
 
 use App\Models\Group;
 use App\Models\Project;
-use App\Models\Course;
-use App\Models\Instructor;
-use App\Models\User;
+use App\Models\AcademicYear;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class GroupForm extends Component
 {
-    public $groupId;
-    public $project_id;
-    public $course_id;
-    public $code;
-    public $name;
-    public $trainer_id;
-    public $supervisor_id;
-    public $start_date;
-    public $end_date;
-    public $max_students;
-    public $status = 'planned';
-    public $is_active = true;
-    
-    public $isEditMode = false;
-    
+    public $groupId      = null;
+    public $isEditMode   = false;
+
+    // حقل العام الدراسي (للفلترة فقط، لا يُخزَّن)
+    public $academic_year_id = null;
+
+    // الحقول الأساسية
+    public $project_id   = null;
+    public $code         = '';
+    public $name         = '';
+    public $max_students = 30;
+    public $is_active    = true;
+
+    // ------------------------------------------------------------------
+    // Computed Properties
+    // ------------------------------------------------------------------
+
+    public function getAvailableYearsProperty()
+    {
+        // العام الحالي والأعوام المستقبلية فقط
+        return AcademicYear::where('end_date', '>=', now()->toDateString())
+            ->orderBy('start_date', 'asc')
+            ->get();
+    }
+
     public function getAvailableProjectsProperty()
     {
-        return Project::active()->get();
+        if (!$this->academic_year_id) return collect();
+        return Project::where('academic_year_id', $this->academic_year_id)
+            ->active()
+            ->get();
     }
 
-    public function getAvailableCoursesProperty()
+    // ------------------------------------------------------------------
+    // Watchers
+    // ------------------------------------------------------------------
+
+    public function updatedAcademicYearId()
     {
-        return Course::all();
+        $this->project_id = null;
     }
 
-    public function getAvailableTrainersProperty()
+    // ------------------------------------------------------------------
+    // Lifecycle
+    // ------------------------------------------------------------------
+
+    public function mount()
     {
-        return Instructor::all();
+        $currentYear = AcademicYear::getCurrent();
+        $this->academic_year_id = $currentYear?->id;
     }
 
-    public function getAvailableSupervisorsProperty()
-    {
-        return User::role(['admin', 'supervisor'])->get();
-    }
+    // ------------------------------------------------------------------
+    // Events
+    // ------------------------------------------------------------------
 
     #[On('edit-group')]
     public function editGroup($id)
     {
         $this->resetValidation();
         $this->isEditMode = true;
-        
+
         $group = Group::findOrFail($id);
-        
-        $this->groupId = $group->id;
-        $this->project_id = $group->project_id;
-        $this->course_id = $group->course_id;
-        $this->code = $group->code;
-        $this->name = $group->name;
-        $this->trainer_id = $group->trainer_id;
-        $this->supervisor_id = $group->supervisor_id;
-        $this->start_date = $group->start_date?->format('Y-m-d');
-        $this->end_date = $group->end_date?->format('Y-m-d');
-        $this->max_students = $group->max_students;
-        $this->status = $group->status;
-        $this->is_active = $group->is_active;
-        
+
+        $this->groupId          = $group->id;
+        $this->project_id       = $group->project_id;
+        $this->academic_year_id = $group->project?->academic_year_id
+                                    ?? AcademicYear::getCurrent()?->id;
+        $this->code             = $group->code;
+        $this->name             = $group->name;
+        $this->max_students     = $group->max_students;
+        $this->is_active        = $group->is_active;
+
         $this->dispatch('open-modal', 'group-form');
     }
 
     public function resetForm()
     {
-        $this->reset(['groupId', 'project_id', 'course_id', 'code', 'name', 'trainer_id', 'supervisor_id', 'start_date', 'end_date', 'max_students', 'status']);
-        $this->is_active = true;
-        $this->status = 'planned';
-        $this->isEditMode = false;
+        $this->reset(['groupId', 'project_id', 'code', 'name', 'max_students']);
+        $this->is_active    = true;
+        $this->isEditMode   = false;
+        $currentYear = AcademicYear::getCurrent();
+        $this->academic_year_id = $currentYear?->id;
         $this->resetValidation();
     }
 
+    // ------------------------------------------------------------------
+    // Save
+    // ------------------------------------------------------------------
+
     public function save()
     {
-        $rules = [
-            'project_id' => 'required|exists:projects,id',
-            'course_id' => 'required|exists:courses,id',
-            'code' => [
-                'required',
-                'string',
-                'max:50',
+        $this->validate([
+            'academic_year_id' => 'required|exists:academic_years,id',
+            'project_id'       => 'required|exists:projects,id',
+            'code'             => [
+                'required', 'string', 'max:50',
                 Rule::unique('groups')->ignore($this->groupId),
             ],
-            'name' => 'required|string|max:255',
-            'trainer_id' => 'required|exists:instructors,id',
-            'supervisor_id' => 'nullable|exists:users,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'max_students' => 'required|integer|min:1',
-            'status' => 'required|in:planned,ongoing,completed,cancelled',
-        ];
+            'name'             => 'required|string|max:255',
+            'max_students'     => 'required|integer|min:1',
+            'is_active'        => 'boolean',
+        ], [
+            'academic_year_id.required' => 'يرجى اختيار العام الدراسي.',
+            'project_id.required'       => 'يرجى اختيار المشروع.',
+            'code.required'             => 'يرجى إدخال كود المجموعة.',
+            'code.unique'               => 'هذا الكود مستخدم من قبل، يرجى اختيار كود آخر.',
+            'name.required'             => 'يرجى إدخال اسم المجموعة.',
+            'max_students.required'     => 'يرجى تحديد الحد الأقصى للطلاب.',
+        ]);
 
-        $this->validate($rules);
+        $project = Project::findOrFail($this->project_id);
 
         $data = [
-            'project_id' => $this->project_id,
-            'course_id' => $this->course_id,
-            'code' => $this->code,
-            'name' => $this->name,
-            'trainer_id' => $this->trainer_id,
-            'supervisor_id' => $this->supervisor_id,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
+            'project_id'   => $this->project_id,
+            'code'         => $this->code,
+            'name'         => $this->name,
             'max_students' => $this->max_students,
-            'status' => $this->status,
-            'is_active' => $this->is_active,
+            'is_active'    => $this->is_active,
+            'status'       => 'active',
+            // التواريخ تؤخذ من المشروع تلقائياً
+            'start_date'   => $project->start_date,
+            'end_date'     => $project->end_date,
         ];
 
         if ($this->isEditMode) {
-            $group = Group::findOrFail($this->groupId);
-            $group->update($data);
+            Group::findOrFail($this->groupId)->update($data);
             $message = 'تم تحديث بيانات المجموعة بنجاح';
         } else {
-            $group = Group::create($data);
+            Group::create($data);
             $message = 'تم إضافة المجموعة بنجاح';
         }
 
         $this->dispatch('close-modal', 'group-form');
         $this->dispatch('refreshDatatable');
-        $this->dispatch('notify', [
-            'type' => 'success',
-            'title' => 'تم الحفظ',
-            'message' => $message,
-        ]);
-        
+        $this->dispatch('notify', ['type' => 'success', 'title' => 'تم الحفظ', 'message' => $message]);
         $this->resetForm();
     }
+
+    // ------------------------------------------------------------------
+    // Render
+    // ------------------------------------------------------------------
 
     public function render()
     {

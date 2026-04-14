@@ -31,4 +31,10 @@ class DailySession extends Model
     {
         return $this->hasMany(SessionAttendance::class);
     }
+
+    public function instructors()
+    {
+        return $this->belongsToMany(Instructor::class, 'session_instructors', 'daily_session_id', 'instructor_id')
+            ->withPivot(['is_primary']);
+    }
 }

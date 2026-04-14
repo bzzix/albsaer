@@ -39,23 +39,49 @@ class AttendanceService extends BaseService
     }
 
     /**
-     * فحص حالة الطالب اليومية بناءً على الحصص
-     * حصتين: حاضر في الاثنتين = حضور كامل، واحدة = تنبيه، صفر = غياب
+     * تحديد الحصة الحالية لمجموعة معينة بناءً على الوقت الحالي
      */
-    public function checkDailyStatus($studentId, $date)
+    public function getCurrentSessionForGroup($groupId, $date = null)
     {
-        // هذا المنطق سيستخدم لاحقاً لتوليد التنبيهات التلقائية
-        $attendances = SessionAttendance::where('student_id', $studentId)
-            ->where('attendance_date', $date)
-            ->get();
+        $date = $date ?? Carbon::today()->toDateString();
+        $dayOfWeek = strtolower(Carbon::parse($date)->format('l'));
+        $currentTime = Carbon::now()->toTimeString();
 
-        $presentCount = $attendances->whereIn('status', ['present', 'late'])->count();
-        $totalSessions = 2; // مفترض بناءً على طلب العميل
+        return DailySession::whereHas('scheduleDay', function ($query) use ($groupId, $dayOfWeek) {
+            $query->where('day_of_week', $dayOfWeek)
+                  ->whereHas('schedule', function ($q) use ($groupId) {
+                      $q->where('group_id', $groupId)->where('is_active', true);
+                  });
+        })
+        ->where('start_time', '<=', $currentTime)
+        ->where('end_time', '>=', $currentTime)
+        ->first();
+    }
 
-        if ($presentCount == 0) {
-            // غياب كامل -> إطلاق تنبيه غياب
-        } elseif ($presentCount < $totalSessions) {
-            // حضور جزئي -> إطلاق تنبيه نقص حضور
-        }
+    /**
+     * جلب إحصائيات الحضور ليوم معين
+     */
+    public function getDailyMetrics($groupId, $date)
+    {
+        $date = $date ?? Carbon::today()->toDateString();
+        
+        $totalStudents = DB::table('group_enrollments')
+            ->where('group_id', $groupId)
+            ->where('status', 'active')
+            ->count();
+
+        $absentCount = SessionAttendance::where('attendance_date', $date)
+            ->whereHas('dailySession.scheduleDay.schedule', function($q) use ($groupId) {
+                $q->where('group_id', $groupId);
+            })
+            ->where('status', 'unexcused_absent')
+            ->distinct('student_id')
+            ->count();
+
+        return [
+            'total_students' => $totalStudents,
+            'absent_count' => $absentCount,
+            'attendance_rate' => $totalStudents > 0 ? round((($totalStudents - $absentCount) / $totalStudents) * 100) : 0,
+        ];
     }
 }

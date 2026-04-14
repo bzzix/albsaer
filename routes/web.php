@@ -41,6 +41,7 @@ Route::middleware([
         Route::get('/projects', \App\Livewire\Dashboard\Academic\Projects\ProjectsManager::class)->name('projects.index');
         Route::get('/groups', \App\Livewire\Dashboard\Academic\Groups\GroupsManager::class)->name('groups.index');
         Route::get('/groups/students', function() { return view('dashboard.coming-soon'); })->name('groups.students');
+        Route::get('/schedules/periods', \App\Livewire\Dashboard\Academic\Schedules\StudyPeriodsManager::class)->name('schedules.periods');
         Route::get('/schedules/builder', \App\Livewire\Dashboard\Academic\Schedules\ScheduleBuilder::class)->name('schedules.builder');
         
         Route::get('/instructors', function() { return view('dashboard.coming-soon'); })->name('instructors.index');
@@ -49,7 +50,7 @@ Route::middleware([
 
     // Other Management
     Route::prefix('dashboard')->group(function() {
-        Route::get('/attendance', function() { return view('dashboard.coming-soon'); })->name('attendance.index');
+        Route::get('/attendance', \App\Livewire\Dashboard\Attendance\DailyAttendanceManager::class)->name('attendance.index');
         Route::get('/exams', function() { return view('dashboard.coming-soon'); })->name('exams.index');
         Route::get('/reports', function() { return view('dashboard.coming-soon'); })->name('reports.index');
         Route::get('/financials', function() { return view('dashboard.coming-soon'); })->name('financials.index');

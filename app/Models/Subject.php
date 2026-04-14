@@ -17,6 +17,11 @@ class Subject extends Model
         'is_active' => 'boolean',
     ];
 
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     public function instructors()
     {
         return $this->belongsToMany(Instructor::class, 'instructor_subjects')

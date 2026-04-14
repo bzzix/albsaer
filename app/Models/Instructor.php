@@ -37,4 +37,9 @@ class Instructor extends Model
     {
         return $this->hasMany(DailySession::class, 'instructor_id');
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
 }

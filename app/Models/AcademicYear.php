@@ -19,7 +19,18 @@ class AcademicYear extends Model
     {
         // Active and ended after today (which means it's current or upcoming)
         return $query->where('is_active', true)
-                     ->whereDate('end_date', '>=', now());
+                     ->whereDate('end_date', '>=', now()->toDateString());
+    }
+
+    /**
+     * الحصول على العام الدراسي الحالي
+     */
+    public static function getCurrent()
+    {
+        return self::where('is_active', true)
+                   ->whereDate('start_date', '<=', now()->toDateString())
+                   ->whereDate('end_date', '>=', now()->toDateString())
+                   ->first() ?? self::where('is_active', true)->orderBy('start_date', 'desc')->first();
     }
 
     public function projects(): HasMany
