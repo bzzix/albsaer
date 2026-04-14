@@ -13,6 +13,11 @@
         <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     @endif
     
+    <!-- Fonts: Cairo for body, Outfit for numbers/display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     @include('dashboard.partials.head-css')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

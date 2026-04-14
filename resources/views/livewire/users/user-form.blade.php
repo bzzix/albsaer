@@ -1,10 +1,21 @@
-<div x-data="{ open: false }" 
-     x-show="open" 
-     @open-modal.window="if ($event.detail[0] === 'user-form') open = true" 
-     @close-modal.window="if ($event.detail[0] === 'user-form') open = false" 
-     @keydown.escape.window="$wire.resetForm(); open = false"
-     class="fixed inset-0 z-50 overflow-y-auto" 
-     style="display: none;">
+<div x-data="{ 
+    open: false
+}" 
+     wire:ignore.self
+     @open-modal.window="
+         if ($event.detail[0] === 'user-form') { 
+             open = true; 
+         }
+     " 
+     @close-modal.window="
+         if ($event.detail[0] === 'user-form') { 
+             open = false; 
+             $wire.resetForm();
+         }
+     " 
+     @keydown.escape.window="open = false; $wire.resetForm();"
+     class="fixed inset-0 z-50 overflow-y-auto pointer-events-none" 
+     :class="{ 'pointer-events-auto': open }">
     
     <!-- Backdrop -->
     <div x-show="open" 
@@ -14,12 +25,12 @@
          x-transition:leave="ease-in duration-200" 
          x-transition:leave-start="opacity-100" 
          x-transition:leave-end="opacity-0" 
-         class="fixed inset-0 bg-surface-900/60 backdrop-blur-sm transition-opacity"></div>
+         class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
 
     <!-- Modal Panel -->
     <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0 pointer-events-none">
-        <div x-show="open" 
-             x-transition:enter="ease-out duration-300" 
+        <div x-show="open"
+             style="display: none;"
              x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
              x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
              x-transition:leave="ease-in duration-200" 
@@ -27,7 +38,7 @@
              x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
              class="pointer-events-auto relative bg-white dark:bg-surface-800 rounded-2xl text-start overflow-hidden shadow-2xl border border-surface-200 dark:border-surface-700 transform transition-all sm:my-8 sm:w-full sm:max-w-2xl">
             
-            <form wire:submit="save">
+            <form @submit.prevent="$wire.save()">
                 <!-- Header -->
                 <div class="px-6 py-4 border-b border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 flex justify-between items-center">
                     <h3 class="text-xl font-bold text-surface-900 dark:text-surface-50">
@@ -41,40 +52,40 @@
                 </div>
 
                 <!-- Body -->
-                <div class="p-6 space-y-6">
+                <div class="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Name -->
                         <div>
                             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">الاسم رباعي <span class="text-red-500">*</span></label>
-                            <input type="text" wire:model="name" class="premium-input w-full" placeholder="أدخل اسم المستخدم بالكامل">
+                            <input type="text" wire:model.blur="name" class="premium-input w-full" placeholder="أدخل اسم المستخدم بالكامل">
                             @error('name') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Email -->
                         <div>
                             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">البريد الإلكتروني <span class="text-red-500">*</span></label>
-                            <input type="email" wire:model="email" class="premium-input w-full text-left" dir="ltr" placeholder="user@example.com">
+                            <input type="email" wire:model.blur="email" class="premium-input w-full text-left" dir="ltr" placeholder="user@example.com">
                             @error('email') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Phone Number -->
                         <div>
                             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">رقم الجوال</label>
-                            <input type="text" wire:model="phone" class="premium-input w-full text-left" dir="ltr" placeholder="+966xxxxxxxxx">
+                            <input type="text" wire:model.blur="phone" class="premium-input w-full text-left" dir="ltr" placeholder="+966xxxxxxxxx">
                             @error('phone') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- National ID -->
                         <div>
                             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">رقم الهوية</label>
-                            <input type="text" wire:model="national_id" class="premium-input w-full text-left" dir="ltr" placeholder="10xxxxxxxx">
+                            <input type="text" wire:model.blur="national_id" class="premium-input w-full text-left" dir="ltr" placeholder="10xxxxxxxx">
                             @error('national_id') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- WhatsApp Number -->
                         <div>
                             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">رقم الواتساب</label>
-                            <input type="text" wire:model="whatsapp_number" class="premium-input w-full text-left" dir="ltr" placeholder="+966xxxxxxxxx">
+                            <input type="text" wire:model.blur="whatsapp_number" class="premium-input w-full text-left" dir="ltr" placeholder="+966xxxxxxxxx">
                             @error('whatsapp_number') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
@@ -108,7 +119,7 @@
                             </label>
                             <div class="relative group">
                                 <input :type="show ? 'text' : 'password'" 
-                                       wire:model="password" 
+                                       wire:model.blur="password" 
                                        class="premium-input w-full text-left pl-10" 
                                        dir="ltr" 
                                        placeholder="{{ $isEditMode ? 'اتركه فارغاً للاحتفاظ بكلمة المرور الحالية' : '********' }}">

@@ -53,14 +53,6 @@ class UserForm extends Component
         $this->dispatch('open-modal', 'user-form');
     }
 
-    #[On('open-modal')]
-    public function handleOpenModal($modalName)
-    {
-        if ($modalName === 'user-form' && !$this->isEditMode && !$this->userId) {
-            $this->resetForm();
-        }
-    }
-
     public function resetForm()
     {
         $this->reset(['userId', 'name', 'email', 'password', 'phone', 'whatsapp_number', 'national_id', 'role']);

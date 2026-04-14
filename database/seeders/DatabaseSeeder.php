@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SettingsSeeder::class,
             RolesAndPermissionsSeeder::class,
-            SettingsSeeder::class,
             NotificationTemplateSeeder::class,
         ]);
 

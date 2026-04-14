@@ -106,7 +106,7 @@ class RolesTable extends DataTableComponent
             return;
         }
         
-        if (in_array($role->name, ['super-admin', 'admin', 'teacher', 'student', 'parent'])) {
+        if (in_array($role->name, ['super-admin', 'admin', 'instructor', 'student', 'parent'])) {
             $this->dispatch('notify', [
                 'type' => 'error',
                 'title' => 'فشل',

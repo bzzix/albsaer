@@ -44,18 +44,25 @@
                 <div class="p-6 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">اسم الدور (باللغة الإنجليزية) <span class="text-red-500">*</span></label>
-                            <input type="text" wire:model="name" class="premium-input w-full text-left" dir="ltr" placeholder="مثال: custom-role-name" {{ in_array($name, ['super-admin', 'admin', 'teacher', 'student', 'parent']) ? 'readonly' : '' }}>
-                            <p class="text-xs text-surface-500 mt-1">اسم فريد للنظام (أحرف صغيرة إنجليزية).</p>
-                            @error('name') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">الاسم العربي (للعرض) <span class="text-red-500">*</span></label>
+                            <input type="text" wire:model="display_name" class="premium-input w-full" placeholder="مثال: مدير المبيعات">
+                            <p class="text-xs text-surface-500 mt-1">الاسم الذي سيظهر للمستخدمين بالعربية.</p>
+                            @error('display_name') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">الاسم المعروض (بالعربية) <span class="text-red-500">*</span></label>
-                            <input type="text" wire:model="display_name" class="premium-input w-full" placeholder="مثال: مدير المبيعات">
-                            <p class="text-xs text-surface-500 mt-1">الاسم الذي سيظهر للمستخدمين في القوائم.</p>
-                            @error('display_name') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">الاسم الإنجليزي (للعرض) <span class="text-red-500">*</span></label>
+                            <input type="text" wire:model="display_name_en" class="premium-input w-full" dir="ltr" placeholder="e.g. Sales Manager">
+                            <p class="text-xs text-surface-500 mt-1">الاسم الذي سيظهر للمستخدمين بالإنجليزية.</p>
+                            @error('display_name_en') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">الاسم الفريد (System Slug) <span class="text-red-500">*</span></label>
+                        <input type="text" wire:model="name" class="premium-input w-full text-left font-mono" dir="ltr" placeholder="e.g. sales-manager أو sales_manager" {{ in_array($name, ['super-admin', 'admin', 'teacher', 'student', 'parent']) ? 'readonly' : '' }}>
+                        <p class="text-xs text-surface-500 mt-1">أحرف إنجليزية صغيرة وأرقام فقط، ويُسمح بـ <code class="bg-surface-100 px-1 rounded">_</code> و <code class="bg-surface-100 px-1 rounded">-</code> بدون مسافات.</p>
+                        @error('name') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
                     <div>

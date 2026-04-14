@@ -6,5 +6,83 @@
 @tailwind utilities;
 
 @layer base {
-    /* Custom Global Styles */
+    :root {
+        /* 1. Primary Color (Blue) */
+        --color-primary-50: #eff6ff;
+        --color-primary-100: #dbeafe;
+        --color-primary-200: #bfdbfe;
+        --color-primary-300: #93c5fd;
+        --color-primary-400: #60a5fa;
+        --color-primary-500: #3b82f6;
+        --color-primary-600: #2563eb;
+        --color-primary-700: #1d4ed8;
+
+        /* 2. Secondary Color (Teal/Emerald) */
+        --color-secondary-50: #ecfdf5;
+        --color-secondary-500: #10b981;
+        --color-secondary-600: #059669;
+
+        /* 3. Surface Color (Slate/Gray) - Light Mode Defaults */
+        --color-surface-50: #f8fafc;
+        --color-surface-100: #f1f5f9;
+        --color-surface-200: #e2e8f0;
+        --color-surface-300: #cbd5e1;
+        --color-surface-400: #94a3b8;
+        --color-surface-500: #64748b;
+        --color-surface-600: #475569;
+        --color-surface-700: #334155;
+        --color-surface-800: #1e293b;
+        --color-surface-900: #0f172a;
+    }
+
+    /* Dark Mode Variable Overrides */
+    .dark {
+        --color-surface-50: #0f172a;
+        --color-surface-100: #1e293b;
+        --color-surface-200: #334155;
+        --color-surface-300: #475569;
+        --color-surface-400: #64748b;
+        --color-surface-500: #94a3b8;
+        --color-surface-600: #cbd5e1;
+        --color-surface-700: #e2e8f0;
+        --color-surface-800: #f1f5f9;
+        --color-surface-900: #f8fafc;
+        
+        background-color: var(--color-surface-50);
+        color: var(--color-surface-900);
+    }
+
+    body {
+        @apply bg-surface-100 text-surface-800 antialiased selection:bg-primary-100 selection:text-primary-900;
+        background-image: radial-gradient(var(--color-surface-300) 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
+
+    .dark body {
+        background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    }
+}
+
+@layer components {
+    .glass-panel {
+        @apply bg-white/90 backdrop-blur-xl border border-white/80 shadow-glass;
+    }
+
+    .dark .glass-panel {
+        @apply bg-surface-100/80 border-surface-200/20 shadow-none;
+    }
+
+    .card-hover {
+        @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-soft;
+    }
+
+    .sidebar-collapsed {
+        @apply w-20 !important;
+    }
+
+    .sidebar-collapsed .nav-text,
+    .sidebar-collapsed .logo-text,
+    .sidebar-collapsed .profile-details {
+        @apply opacity-0 w-0 hidden !important;
+    }
 }

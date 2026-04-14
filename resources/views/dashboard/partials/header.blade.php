@@ -49,6 +49,19 @@
             تسجيل طالب
         </button>
 
+        <!-- Dark Mode Toggle -->
+        <button @click="document.documentElement.classList.toggle('dark'); fetch('{{ route('settings.toggle-dark-mode') }}', {method: 'POST', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}})"
+            class="p-2 rounded-lg text-surface-500 hover:text-primary-600 hover:bg-primary-50 transition-colors focus:outline-none dark:hover:bg-surface-200">
+            <!-- Sun Icon (Show in Dark) -->
+            <svg x-show="document.documentElement.classList.contains('dark')" class="w-5 h-5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21m8.966-8.966h-2.25m-13.5 0H3m16.035-6.763l-1.591 1.591M6.763 17.237l-1.591 1.591m12.444 0l-1.591-1.591M6.763 6.763L5.172 5.172M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <!-- Moon Icon (Show in Light) -->
+            <svg x-show="!document.documentElement.classList.contains('dark')" class="w-5 h-5 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+        </button>
+
         <!-- Notification -->
         <button
             class="relative p-2 rounded-lg text-surface-500 hover:text-surface-900 hover:bg-surface-100 transition-colors">
