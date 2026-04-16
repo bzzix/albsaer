@@ -2,7 +2,12 @@
 
 namespace App\Livewire\Dashboard\Academic\Instructors;
 
-use Livewire\Component;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Column;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\Instructor;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Reactive;
 
 class InstructorsTable extends DataTableComponent
 {
