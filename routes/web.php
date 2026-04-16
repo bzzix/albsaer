@@ -44,7 +44,8 @@ Route::middleware([
         Route::get('/schedules/periods', \App\Livewire\Dashboard\Academic\Schedules\StudyPeriodsManager::class)->name('schedules.periods');
         Route::get('/schedules/builder', \App\Livewire\Dashboard\Academic\Schedules\ScheduleBuilder::class)->name('schedules.builder');
         
-        Route::get('/instructors', function() { return view('dashboard.coming-soon'); })->name('instructors.index');
+        Route::get('/subjects', \App\Livewire\Dashboard\Academic\Subjects\SubjectsManager::class)->name('subjects.index');
+        Route::get('/instructors', \App\Livewire\Dashboard\Academic\Instructors\InstructorsManager::class)->name('instructors.index');
         Route::get('/students', function() { return view('dashboard.coming-soon'); })->name('students.index');
     });
 
